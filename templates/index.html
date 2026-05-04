@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CheckYourNetwork</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Test de Connexion</h1>
+
+        <div class="gauge">
+            <svg width="250" height="250">
+                <defs>
+                    <linearGradient id="gradient">
+                        <stop offset="0%" stop-color="#ffcc00" />
+                        <stop offset="50%" stop-color="#ff6600" />
+                        <stop offset="100%" stop-color="#cc0000" />
+                    </linearGradient>
+                </defs>
+
+                <circle cx="125" cy="125" r="100" class="bg" />
+                <circle cx="125" cy="125" r="100" class="progress" id="progress" />
+            </svg>
+
+            <div class="score" id="score" data-score="{{ score }}">0</div>
+        </div>
+
+        <form method="GET">
+            <button type="submit">Tester</button>
+        </form>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
