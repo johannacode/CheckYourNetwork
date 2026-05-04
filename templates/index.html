@@ -1,34 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CheckYourNetwork</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>Test de Connexion</h1>
+        <div class="header">
+            <h1>Test de Connexion</h1>
+            <p class="subtitle">Mesurez la qualité de votre connexion internet</p>
+        </div>
 
-        <div class="gauge">
-            <svg width="250" height="250">
+        <div class="gauge-wrapper">
+            <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <linearGradient id="gradient">
-                        <stop offset="0%" stop-color="#ffcc00" />
-                        <stop offset="50%" stop-color="#ff6600" />
-                        <stop offset="100%" stop-color="#cc0000" />
+                    <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%"   stop-color="#FFD000" />
+                        <stop offset="50%"  stop-color="#FF6600" />
+                        <stop offset="100%" stop-color="#CC0000" />
                     </linearGradient>
                 </defs>
 
-                <circle cx="125" cy="125" r="100" class="bg" />
-                <circle cx="125" cy="125" r="100" class="progress" id="progress" />
+                <circle cx="140" cy="140" r="110"
+                    class="bg-track"
+                    stroke-dasharray="518 691"
+                    transform="rotate(135 140 140)"
+                />
+
+                <circle cx="140" cy="140" r="110"
+                    class="progress-arc"
+                    id="progress"
+                    stroke-dasharray="518 691"
+                    stroke-dashoffset="518"
+                    transform="rotate(135 140 140)"
+                />
             </svg>
 
-            <div class="score" id="score" data-score="{{ score }}">0</div>
+            <div class="gauge-center">
+                <span class="score-value" id="score" data-score="{{ score }}">0</span>
+                <span class="score-unit">Score</span>
+            </div>
         </div>
 
+        {% if results %}
+        {% set total_latency = namespace(v=0) %}
+        {% set count = namespace(v=0) %}
+        {% for r in results %}
+            {% if r.latency %}
+                {% set total_latency.v = total_latency.v + r.latency %}
+                {% set count.v = count.v + 1 %}
+            {% endif %}
+        {% endfor %}
+        {% if count.v > 0 %}
+            {% set avg_ping = (total_latency.v / count.v) | round(0) | int %}
+        {% else %}
+            {% set avg_ping = 0 %}
+        {% endif %}
+
+        <div class="ping-card">
+            <div class="ping-label">
+                <span class="ping-icon">⚡</span> Ping
+            </div>
+            <div class="ping-row">
+                <span class="ping-value">{{ avg_ping if avg_ping > 0 else '--' }}</span>
+                <span class="ping-ms">ms</span>
+            </div>
+            <!-- {% if avg_ping > 0 %}
+                {% if avg_ping < 80 %}
+                    <span class="ping-badge rapide">Rapide</span>
+                {% elif avg_ping < 200 %}
+                    <span class="ping-badge moyen">Moyen</span>
+                {% else %}
+                    <span class="ping-badge lent">Lent</span>
+                {% endif %}
+            {% endif %} -->
+
+            {% if score is defined and score > 0 %}
+                {% if score >= 80 %}
+                    <span class="ping-badge rapide">Rapide</span>
+                {% elif score >= 50 %}
+                    <span class="ping-badge moyen">Moyen</span>
+                {% else %}
+                    <span class="ping-badge lent">Lent</span>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+
         <form method="GET">
-            <button type="submit">Tester</button>
+            <button class="test-btn" type="submit">Tester</button>
         </form>
     </div>
 
